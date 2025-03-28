@@ -20,25 +20,35 @@ export default function Home() {
     setIsLoading(true)
     setResponse("")
 
-    setResponse("今は返答できないよ。APIを使うにもお金がかかるんじゃ。俳句の感想が欲しいならママにでも聞いてもらったらどうじゃ？")
-    setIsLoading(false)
 
-    // try {
-    //   const { text } = await generateText({
-    //     model: openai("gpt-4o"),
-    //     prompt: `以下の俳句または短歌を解釈して、感想を述べてください。日本語で回答してください。
-        
-    //     ${poem}`,
-    //     maxTokens: 500,
-    //   })
+    // setResponse("今は返答できないよ。APIを使うにもお金がかかるんじゃ。俳句の感想が欲しいならママにでも聞いてもらったらどうじゃ？")
+    // setIsLoading(false)
 
-    //   setResponse(text)
-    // } catch (error) {
-    //   console.error("Error generating response:", error)
-    //   setResponse("申し訳ありません。エラーが発生しました。もう一度お試しください。")
-    // } finally {
-    //   setIsLoading(false)
-    // }
+
+    try {
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ poem }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('API request failed');
+      }
+      
+      const data = await response.json();
+      setResponse(data.text);
+    } catch (error) {
+      console.error('Error generating response:', error)
+      setResponse('申し訳ありません。エラーが発生しました。もう一度お試しください。')
+    } finally {
+      setIsLoading(false)
+    }
+
+
+
 
 
   }
