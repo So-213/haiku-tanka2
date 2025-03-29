@@ -1,15 +1,22 @@
+// ./app/page.tsx
 "use client"
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import Image from "next/image"
-import { generateText } from "ai"
-import { openai } from "@ai-sdk/openai"
+
+// ✅ 追加：認証系
+import { useSession, signIn } from "next-auth/react"
+
 
 
 
 export default function Home() {
+  const { data: session } = useSession() // ✅ 認証情報の取得
+  const [showLoginModal, setShowLoginModal] = useState(false)
+
+
   const [poem, setPoem] = useState("古池や　蛙飛びこむ　水の音")
   const [response, setResponse] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -20,10 +27,8 @@ export default function Home() {
     setIsLoading(true)
     setResponse("")
 
-
     // setResponse("今は返答できないよ。APIを使うにもお金がかかるんじゃ。俳句の感想が欲しいならママにでも聞いてもらったらどうじゃ？")
     // setIsLoading(false)
-
 
     try {
       const response = await fetch('/api/generate', {
@@ -46,12 +51,9 @@ export default function Home() {
     } finally {
       setIsLoading(false)
     }
-
-
-
-
-
   }
+
+
 
   return (
     <main className="flex min-h-screen flex-col items-center p-4 md:p-8">
@@ -79,13 +81,29 @@ export default function Home() {
               />
             </div>
 
-            <Button
-              onClick={handleSubmit}
-              className="w-full bg-blue-500 hover:bg-blue-600 rounded-none h-12 text-white font-normal"
-              disabled={isLoading}
-            >
-              {isLoading ? "処理中..." : "提出"}
-            </Button>
+            {session ? (
+              <Button
+                onClick={handleSubmit}
+                className="w-full bg-blue-500 hover:bg-blue-600 rounded-none h-12 text-white font-normal"
+                disabled={isLoading}
+              >
+                {isLoading ? "処理中..." : "提出"}
+              </Button>
+            ) : (
+              // <Button
+              //   onClick={() => signIn("google")}
+              //   className="w-full bg-blue-500 hover:bg-blue-600 rounded-none h-12 text-white font-normal"
+              // >
+              //   ログインして使う
+              // </Button>
+              <Button
+                onClick={() => setShowLoginModal(true)}
+                className="w-full bg-blue-500 hover:bg-blue-600 rounded-none h-12 text-white font-normal"
+              >
+                ログインして使う
+              </Button>
+            )}
+
           </CardContent>
         </Card>
 
@@ -103,6 +121,35 @@ export default function Home() {
           className="opacity-80"
         />
       </div>
+
+
+      {showLoginModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg text-center w-80">
+            <h2 className="text-lg font-semibold mb-4">ログイン方法を選択</h2>
+            <Button
+              onClick={() => {
+                signIn("google")
+                setShowLoginModal(false)
+              }}
+              className="w-full mb-2 bg-green-500 hover:bg-green-600 text-white"
+            >
+              Googleでログイン
+            </Button>
+
+            {/* 将来的に他プロバイダも追加可能 */}
+            {/* <Button ...>GitHubでログイン</Button> */}
+
+            <Button
+              onClick={() => setShowLoginModal(false)}
+              className="w-full bg-gray-300 hover:bg-gray-400 text-black"
+            >
+              キャンセル
+            </Button>
+          </div>
+        </div>
+      )}
+
     </main>
   )
 }
