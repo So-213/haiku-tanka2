@@ -6,12 +6,15 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import Image from "next/image"
 import { signIn } from "next-auth/react"
+import { Session } from 'next-auth'
 
-type Props = {
-  session: any // または Session | null でもOK
+
+
+interface HomeClientProps {
+  session: Session | null
 }
 
-export default function HomeClient({ session }: Props) {
+export default function HomeClient({ session }: HomeClientProps) {
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [poem, setPoem] = useState("古池や　蛙飛びこむ　水の音")
   const [response, setResponse] = useState("")
@@ -55,7 +58,7 @@ export default function HomeClient({ session }: Props) {
           ※AIのため、正しく解釈できない場合があります。
         </p>
 
-        <Card className="w-full border rounded-md overflow-hidden mb-4">
+        <Card className="w-full border rounded-md overflow-hidden mb-4 mt-12">
           <CardContent className="p-0">
             <div className="p-4">
               <label className="block text-sm mb-2">ここに文章を入力してください：</label>
