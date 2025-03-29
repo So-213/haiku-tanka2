@@ -2,7 +2,6 @@ import type React from "react"
 import "./globals.css"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
-import { ThemeProvider } from "@/components/theme-provider"
 import { SessionProvider } from "next-auth/react"
 
 
@@ -24,9 +23,7 @@ export default function RootLayout({
     <html lang="ja">
       <body className={inter.className}>
         <SessionProvider>
-          <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-            {children}
-          </ThemeProvider>
+          {children}
         </SessionProvider>
       </body>
     </html>
