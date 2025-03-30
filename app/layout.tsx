@@ -3,6 +3,7 @@ import "./globals.css"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import { SessionProvider } from "next-auth/react"
+import Navbar from "@/components/Navbar";
 
 
 
@@ -24,6 +25,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <SessionProvider>
           {children}
+          <Navbar/>
         </SessionProvider>
       </body>
     </html>

@@ -1,19 +1,20 @@
 // ./components/Navbar.tsx
 "use client";
 
-import { signOut } from "next-auth/react"; // NextAuth.js のクライアント側フック 
-import { useState } from "react";
-import { Session } from 'next-auth'
 
-interface NavbarProps {
-  session: Session | null
-}
 
-export default function Navbar({ session }: NavbarProps) {
+import Link from "next/link";
+import { useState } from "react";  //開閉状態管理
+import { signOut, useSession } from "next-auth/react"
+
+
+
+export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const { data: session } = useSession(); 
 
- 
 
+  
   if (!session) return null;
 
   return (
@@ -25,7 +26,15 @@ export default function Navbar({ session }: NavbarProps) {
 
       {/* ナビゲーションメニュー */}
       <ul className={`menu ${isOpen ? "open" : ""}`}>  
-        <button className="logout-button" onClick={() => signOut({ callbackUrl: "/" })}>ログアウト</button>      
+        <li>
+            {session?.user?.name} さん 
+        </li>
+        <li>
+            <Link href="/account">アカウント情報</Link>
+        </li>
+        <li>
+            <button className="logout-button" onClick={() => signOut({ callbackUrl: "/" })}>ログアウト</button>  
+        </li>   
       </ul>
 
 
