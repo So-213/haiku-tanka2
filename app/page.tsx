@@ -7,6 +7,8 @@ import PoemForm from "@/components/PoemForm"
 import ResponseBox from "@/components/ResponseBox"
 import LoginModal from "@/components/LoginModal"
 
+
+
 export default function Page() {
   const [poem, setPoem] = useState("古池や　蛙飛びこむ　水の音")
   const [response, setResponse] = useState("")
