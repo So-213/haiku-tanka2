@@ -19,7 +19,7 @@ export default function LoginModal({ show, onCancel }: { show: boolean; onCancel
 
         <Button
           onClick={() => setShowLineNotice(true)}
-          className="w-full mb-2 bg-blue-500 hover:bg-blue-600 text-white"
+          className="w-full mb-2 bg-green-500 hover:bg-green-600 text-white"
         >
           LINEでログイン
         </Button>
@@ -29,7 +29,7 @@ export default function LoginModal({ show, onCancel }: { show: boolean; onCancel
             signIn("google")
             onCancel()
           }}
-          className="w-full mb-2 bg-green-500 hover:bg-green-600 text-white"
+          className="w-full mb-2 bg-blue-500 hover:bg-blue-600 text-white"
         >
           Googleでログイン
         </Button>

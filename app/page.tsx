@@ -37,7 +37,7 @@ export default function Page() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center p-4 md:p-8">
+    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-rose-100 via-white to-purple-100">
       <div className="w-full max-w-2xl">
         <h1 className="text-2xl font-bold mb-4">AIに俳句/短歌を投げてみよう！</h1>
         <p className="mb-6 text-sm">

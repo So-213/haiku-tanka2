@@ -5,7 +5,7 @@
 
 import Link from "next/link";
 import { useState } from "react";  //開閉状態管理
-import { signOut, useSession } from "next-auth/react"
+import { useSession } from "next-auth/react"
 
 
 
@@ -27,14 +27,8 @@ export default function Navbar() {
       {/* ナビゲーションメニュー */}
       <ul className={`menu ${isOpen ? "open" : ""}`}>  
         <li>
-            {session?.user?.name} さん 
-        </li>
-        <li>
             <Link href="/account">アカウント情報</Link>
-        </li>
-        <li>
-            <button className="logout-button" onClick={() => signOut({ callbackUrl: "/" })}>ログアウト</button>  
-        </li>   
+        </li> 
       </ul>
 
 
