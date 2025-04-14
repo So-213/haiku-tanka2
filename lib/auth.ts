@@ -5,7 +5,7 @@ import Google from "next-auth/providers/google"
 import LINE from "next-auth/providers/line"
 import { prisma } from "./prisma"
 
-export const { auth, handlers, signIn, signOut } = NextAuth({
+export const { auth, handlers, signIn, signOut } = NextAuth({   //オブジェクトを渡してオブジェクトを返してくれる NextAuth
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -27,7 +27,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 
   callbacks: {
 
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account, profile }) {    //ここでいうuserはSupabaseDBのUserテーブルのレコード
       if (user && account) {
         console.log('認証プロバイダー:', account.provider);
         console.log('プロバイダーID:', account.providerAccountId);
@@ -76,19 +76,17 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         token.userId = user.id;
         console.log('JWTトークンにユーザーIDを設定:', user.id);
       }
-      
       // 既存のトークンがある場合は、そのトークンを使い続ける
       if (token && token.userId) {
         console.log('JWTトークンのユーザーID:', token.userId);
       } else {
         console.log('JWTトークンにユーザーIDがありません');
       }
-      
       return token;
     },
 
     async session({ session, token }) {
-      // AuthのsessionにJWTのuserIdを追加
+      // Authのsession（ラップが必要なクライアントコンポーネント）にJWTのuserIdを追加
       if (token && typeof token === 'object' && 'userId' in token) {
         session.user.id = (token as { userId: string }).userId;
         console.log('セッションにユーザーIDを設定:', session.user.id);
@@ -110,17 +108,6 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 
 
 
-
-
-// クライアント側でuser.idを確認する場合
-// import { useSession } from "next-auth/react";
-
-// const Dashboard = () => {
-//   const { data: session } = useSession();
-
-//   // session?.user.id が DBのUser.idになる
-//   console.log(session?.user.id);
-// }
 
 
 

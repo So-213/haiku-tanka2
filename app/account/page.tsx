@@ -110,11 +110,11 @@ export default function AccountPage() {
                 </h1>
                 <div className="name">
                     <span>{session.user?.name}</span>
-                    <p className="user-id">ユーザーID: {session.user?.id || "未設定"}</p>
+                    {/* <p className="user-id">ユーザーID: {session.user?.id || "未設定"}</p> */}
                 </div>
 
                 {/* デバッグ情報（開発中のみ表示） */}
-                <div className="debug-info">
+                {/* <div className="debug-info">
                     <h3>デバッグ情報</h3>
                     <pre>
                         {JSON.stringify({
@@ -122,7 +122,7 @@ export default function AccountPage() {
                             subscription: subscription
                         }, null, 2)}
                     </pre>
-                </div>
+                </div> */}
 
                 <div className="subscription-status">
                     <h2>サブスクリプション状態</h2>
@@ -131,7 +131,7 @@ export default function AccountPage() {
                     ) : subscription ? (
                         <div>
                             <p>ステータス: {subscription.status === 'active' ? 'サブスク加入中' : '無料プラン'}</p>
-                            <p>サブスクリプションID: <span className="subscription-id">{subscription.id}</span></p>
+                            {/* <p>サブスクリプションID: <span className="subscription-id">{subscription.id}</span></p> */}
                             {subscription.current_period_end && (
                                 <p>次回更新日: {new Date(subscription.current_period_end).toLocaleDateString()}</p>
                             )}
