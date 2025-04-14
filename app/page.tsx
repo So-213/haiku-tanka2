@@ -36,6 +36,7 @@ export default function Page() {
     }
   }
 
+  
   return (
     <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-rose-100 via-white to-purple-100">
       <div className="w-full max-w-2xl">
