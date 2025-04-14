@@ -973,6 +973,9 @@ export namespace Prisma {
   export type UserMinAggregateOutputType = {
     id: string | null
     name: string | null
+    email: string | null
+    provider: string | null
+    provider_id: string | null
     stripe_customer_id: string | null
     created_at: Date | null
     updated_at: Date | null
@@ -981,6 +984,9 @@ export namespace Prisma {
   export type UserMaxAggregateOutputType = {
     id: string | null
     name: string | null
+    email: string | null
+    provider: string | null
+    provider_id: string | null
     stripe_customer_id: string | null
     created_at: Date | null
     updated_at: Date | null
@@ -989,6 +995,9 @@ export namespace Prisma {
   export type UserCountAggregateOutputType = {
     id: number
     name: number
+    email: number
+    provider: number
+    provider_id: number
     stripe_customer_id: number
     created_at: number
     updated_at: number
@@ -999,6 +1008,9 @@ export namespace Prisma {
   export type UserMinAggregateInputType = {
     id?: true
     name?: true
+    email?: true
+    provider?: true
+    provider_id?: true
     stripe_customer_id?: true
     created_at?: true
     updated_at?: true
@@ -1007,6 +1019,9 @@ export namespace Prisma {
   export type UserMaxAggregateInputType = {
     id?: true
     name?: true
+    email?: true
+    provider?: true
+    provider_id?: true
     stripe_customer_id?: true
     created_at?: true
     updated_at?: true
@@ -1015,6 +1030,9 @@ export namespace Prisma {
   export type UserCountAggregateInputType = {
     id?: true
     name?: true
+    email?: true
+    provider?: true
+    provider_id?: true
     stripe_customer_id?: true
     created_at?: true
     updated_at?: true
@@ -1096,6 +1114,9 @@ export namespace Prisma {
   export type UserGroupByOutputType = {
     id: string
     name: string
+    email: string | null
+    provider: string | null
+    provider_id: string | null
     stripe_customer_id: string | null
     created_at: Date
     updated_at: Date
@@ -1121,6 +1142,9 @@ export namespace Prisma {
   export type UserSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    email?: boolean
+    provider?: boolean
+    provider_id?: boolean
     stripe_customer_id?: boolean
     created_at?: boolean
     updated_at?: boolean
@@ -1130,6 +1154,9 @@ export namespace Prisma {
   export type UserSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    email?: boolean
+    provider?: boolean
+    provider_id?: boolean
     stripe_customer_id?: boolean
     created_at?: boolean
     updated_at?: boolean
@@ -1138,6 +1165,9 @@ export namespace Prisma {
   export type UserSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    email?: boolean
+    provider?: boolean
+    provider_id?: boolean
     stripe_customer_id?: boolean
     created_at?: boolean
     updated_at?: boolean
@@ -1146,12 +1176,15 @@ export namespace Prisma {
   export type UserSelectScalar = {
     id?: boolean
     name?: boolean
+    email?: boolean
+    provider?: boolean
+    provider_id?: boolean
     stripe_customer_id?: boolean
     created_at?: boolean
     updated_at?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "stripe_customer_id" | "created_at" | "updated_at", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "provider" | "provider_id" | "stripe_customer_id" | "created_at" | "updated_at", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     subscription?: boolean | User$subscriptionArgs<ExtArgs>
   }
@@ -1166,6 +1199,9 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       name: string
+      email: string | null
+      provider: string | null
+      provider_id: string | null
       stripe_customer_id: string | null
       created_at: Date
       updated_at: Date
@@ -1595,6 +1631,9 @@ export namespace Prisma {
   interface UserFieldRefs {
     readonly id: FieldRef<"User", 'String'>
     readonly name: FieldRef<"User", 'String'>
+    readonly email: FieldRef<"User", 'String'>
+    readonly provider: FieldRef<"User", 'String'>
+    readonly provider_id: FieldRef<"User", 'String'>
     readonly stripe_customer_id: FieldRef<"User", 'String'>
     readonly created_at: FieldRef<"User", 'DateTime'>
     readonly updated_at: FieldRef<"User", 'DateTime'>
@@ -3150,6 +3189,9 @@ export namespace Prisma {
   export const UserScalarFieldEnum: {
     id: 'id',
     name: 'name',
+    email: 'email',
+    provider: 'provider',
+    provider_id: 'provider_id',
     stripe_customer_id: 'stripe_customer_id',
     created_at: 'created_at',
     updated_at: 'updated_at'
@@ -3260,6 +3302,9 @@ export namespace Prisma {
     NOT?: UserWhereInput | UserWhereInput[]
     id?: StringFilter<"User"> | string
     name?: StringFilter<"User"> | string
+    email?: StringNullableFilter<"User"> | string | null
+    provider?: StringNullableFilter<"User"> | string | null
+    provider_id?: StringNullableFilter<"User"> | string | null
     stripe_customer_id?: StringNullableFilter<"User"> | string | null
     created_at?: DateTimeFilter<"User"> | Date | string
     updated_at?: DateTimeFilter<"User"> | Date | string
@@ -3269,6 +3314,9 @@ export namespace Prisma {
   export type UserOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
+    email?: SortOrderInput | SortOrder
+    provider?: SortOrderInput | SortOrder
+    provider_id?: SortOrderInput | SortOrder
     stripe_customer_id?: SortOrderInput | SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
@@ -3277,19 +3325,26 @@ export namespace Prisma {
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    email?: string
+    provider_provider_id?: UserProviderProvider_idCompoundUniqueInput
     AND?: UserWhereInput | UserWhereInput[]
     OR?: UserWhereInput[]
     NOT?: UserWhereInput | UserWhereInput[]
     name?: StringFilter<"User"> | string
+    provider?: StringNullableFilter<"User"> | string | null
+    provider_id?: StringNullableFilter<"User"> | string | null
     stripe_customer_id?: StringNullableFilter<"User"> | string | null
     created_at?: DateTimeFilter<"User"> | Date | string
     updated_at?: DateTimeFilter<"User"> | Date | string
     subscription?: XOR<SubscriptionNullableScalarRelationFilter, SubscriptionWhereInput> | null
-  }, "id">
+  }, "id" | "email" | "provider_provider_id">
 
   export type UserOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
+    email?: SortOrderInput | SortOrder
+    provider?: SortOrderInput | SortOrder
+    provider_id?: SortOrderInput | SortOrder
     stripe_customer_id?: SortOrderInput | SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
@@ -3304,6 +3359,9 @@ export namespace Prisma {
     NOT?: UserScalarWhereWithAggregatesInput | UserScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"User"> | string
     name?: StringWithAggregatesFilter<"User"> | string
+    email?: StringNullableWithAggregatesFilter<"User"> | string | null
+    provider?: StringNullableWithAggregatesFilter<"User"> | string | null
+    provider_id?: StringNullableWithAggregatesFilter<"User"> | string | null
     stripe_customer_id?: StringNullableWithAggregatesFilter<"User"> | string | null
     created_at?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updated_at?: DateTimeWithAggregatesFilter<"User"> | Date | string
@@ -3387,6 +3445,9 @@ export namespace Prisma {
   export type UserCreateInput = {
     id?: string
     name: string
+    email?: string | null
+    provider?: string | null
+    provider_id?: string | null
     stripe_customer_id?: string | null
     created_at?: Date | string
     updated_at?: Date | string
@@ -3396,6 +3457,9 @@ export namespace Prisma {
   export type UserUncheckedCreateInput = {
     id?: string
     name: string
+    email?: string | null
+    provider?: string | null
+    provider_id?: string | null
     stripe_customer_id?: string | null
     created_at?: Date | string
     updated_at?: Date | string
@@ -3405,6 +3469,9 @@ export namespace Prisma {
   export type UserUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: NullableStringFieldUpdateOperationsInput | string | null
+    provider_id?: NullableStringFieldUpdateOperationsInput | string | null
     stripe_customer_id?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -3414,6 +3481,9 @@ export namespace Prisma {
   export type UserUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: NullableStringFieldUpdateOperationsInput | string | null
+    provider_id?: NullableStringFieldUpdateOperationsInput | string | null
     stripe_customer_id?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -3423,6 +3493,9 @@ export namespace Prisma {
   export type UserCreateManyInput = {
     id?: string
     name: string
+    email?: string | null
+    provider?: string | null
+    provider_id?: string | null
     stripe_customer_id?: string | null
     created_at?: Date | string
     updated_at?: Date | string
@@ -3431,6 +3504,9 @@ export namespace Prisma {
   export type UserUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: NullableStringFieldUpdateOperationsInput | string | null
+    provider_id?: NullableStringFieldUpdateOperationsInput | string | null
     stripe_customer_id?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -3439,6 +3515,9 @@ export namespace Prisma {
   export type UserUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: NullableStringFieldUpdateOperationsInput | string | null
+    provider_id?: NullableStringFieldUpdateOperationsInput | string | null
     stripe_customer_id?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -3578,9 +3657,17 @@ export namespace Prisma {
     nulls?: NullsOrder
   }
 
+  export type UserProviderProvider_idCompoundUniqueInput = {
+    provider: string
+    provider_id: string
+  }
+
   export type UserCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    email?: SortOrder
+    provider?: SortOrder
+    provider_id?: SortOrder
     stripe_customer_id?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
@@ -3589,6 +3676,9 @@ export namespace Prisma {
   export type UserMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    email?: SortOrder
+    provider?: SortOrder
+    provider_id?: SortOrder
     stripe_customer_id?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
@@ -3597,6 +3687,9 @@ export namespace Prisma {
   export type UserMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    email?: SortOrder
+    provider?: SortOrder
+    provider_id?: SortOrder
     stripe_customer_id?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
@@ -3953,6 +4046,9 @@ export namespace Prisma {
   export type UserCreateWithoutSubscriptionInput = {
     id?: string
     name: string
+    email?: string | null
+    provider?: string | null
+    provider_id?: string | null
     stripe_customer_id?: string | null
     created_at?: Date | string
     updated_at?: Date | string
@@ -3961,6 +4057,9 @@ export namespace Prisma {
   export type UserUncheckedCreateWithoutSubscriptionInput = {
     id?: string
     name: string
+    email?: string | null
+    provider?: string | null
+    provider_id?: string | null
     stripe_customer_id?: string | null
     created_at?: Date | string
     updated_at?: Date | string
@@ -3985,6 +4084,9 @@ export namespace Prisma {
   export type UserUpdateWithoutSubscriptionInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: NullableStringFieldUpdateOperationsInput | string | null
+    provider_id?: NullableStringFieldUpdateOperationsInput | string | null
     stripe_customer_id?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -3993,6 +4095,9 @@ export namespace Prisma {
   export type UserUncheckedUpdateWithoutSubscriptionInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    provider?: NullableStringFieldUpdateOperationsInput | string | null
+    provider_id?: NullableStringFieldUpdateOperationsInput | string | null
     stripe_customer_id?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string

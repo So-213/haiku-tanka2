@@ -11,23 +11,47 @@ export default function AccountPage() {
 
     useEffect(() => {
         const fetchSubscription = async () => {
+            setLoading(true);
             if (session?.user?.id) {
+                console.log('現在のユーザーID:', session.user.id);
                 try {
                     const response = await fetch(`/api/subscription?userId=${session.user.id}`);
-                    const data = await response.json();
-                    setSubscription(data);
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log('取得したサブスクリプションデータ:', data);
+                        if (data && Object.keys(data).length > 0) {
+                            console.log('サブスクリプションデータを更新します');
+                            setSubscription(data);
+                        } else {
+                            console.log('サブスクリプションデータが空です');
+                            setSubscription(null);
+                        }
+                    } else {
+                        const errorText = await response.text();
+                        console.error('Subscription API response not OK:', response.status, errorText);
+                        setSubscription(null);
+                    }
                 } catch (error) {
                     console.error('Error fetching subscription:', error);
+                    setSubscription(null);
                 }
+            } else {
+                console.log('セッションユーザーIDがありません');
+                setSubscription(null);
             }
             setLoading(false);
         };
 
-        fetchSubscription();
+        if (session?.user) {
+            fetchSubscription();
+        } else {
+            setLoading(false);
+        }
     }, [session]);
 
     const handleSubscribe = async () => {
         try {
+            setLoading(true);
             const response = await fetch('/api/subscription/create', {
                 method: 'POST',
                 headers: {
@@ -40,12 +64,21 @@ export default function AccountPage() {
 
             if (response.ok) {
                 const data = await response.json();
-                setSubscription(data);
+                if (data && Object.keys(data).length > 0) {
+                    setSubscription(data);
+                } else {
+                    console.error('サブスクリプションデータが空です');
+                    setSubscription(null);
+                }
             } else {
-                console.error('Failed to create subscription');
+                console.error('Failed to create subscription:', response.status);
+                setSubscription(null);
             }
         } catch (error) {
             console.error('Error creating subscription:', error);
+            setSubscription(null);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -77,6 +110,18 @@ export default function AccountPage() {
                 </h1>
                 <div className="name">
                     <span>{session.user?.name}</span>
+                    <p className="user-id">ユーザーID: {session.user?.id || "未設定"}</p>
+                </div>
+
+                {/* デバッグ情報（開発中のみ表示） */}
+                <div className="debug-info">
+                    <h3>デバッグ情報</h3>
+                    <pre>
+                        {JSON.stringify({
+                            sessionUser: session.user,
+                            subscription: subscription
+                        }, null, 2)}
+                    </pre>
                 </div>
 
                 <div className="subscription-status">
@@ -86,6 +131,7 @@ export default function AccountPage() {
                     ) : subscription ? (
                         <div>
                             <p>ステータス: {subscription.status === 'active' ? 'サブスク加入中' : '無料プラン'}</p>
+                            <p>サブスクリプションID: <span className="subscription-id">{subscription.id}</span></p>
                             {subscription.current_period_end && (
                                 <p>次回更新日: {new Date(subscription.current_period_end).toLocaleDateString()}</p>
                             )}
@@ -96,8 +142,9 @@ export default function AccountPage() {
                             <button
                                 onClick={handleSubscribe}
                                 className="subscribe-button"
+                                disabled={loading}
                             >
-                                サブスクに加入する
+                                {loading ? '処理中...' : 'サブスクに加入する'}
                             </button>
                         </div>
                     )}
@@ -134,10 +181,16 @@ export default function AccountPage() {
                     font-size: 22px;
                     font-weight: bold;
                     display: flex;
+                    flex-direction: column;
                     align-items: center;
                     justify-content: center;
                     gap: 10px;
                     margin: 20px 0;
+                }
+                .user-id {
+                    font-size: 14px;
+                    color: #666;
+                    margin-top: 5px;
                 }
                 .icon {
                     width: 28px;
@@ -181,6 +234,30 @@ export default function AccountPage() {
                 }
                 .logout-button:hover {
                     background-color: #e04876;
+                }
+                .subscription-id {
+                    font-size: 12px;
+                    color: #888;
+                    font-family: monospace;
+                }
+                .debug-info {
+                    margin-top: 20px;
+                    padding: 10px;
+                    background: #f5f5f5;
+                    border-radius: 5px;
+                    font-size: 12px;
+                    text-align: left;
+                    overflow: auto;
+                    max-height: 300px;
+                }
+                .debug-info h3 {
+                    font-size: 14px;
+                    margin-bottom: 10px;
+                    color: #666;
+                }
+                .debug-info pre {
+                    white-space: pre-wrap;
+                    word-break: break-all;
                 }
             `}</style>
         </div>

@@ -18,10 +18,15 @@ datasource db {
 model User {
   id               String   @id @default(cuid())
   name             String
+  email            String?  @unique
+  provider         String?  // 認証プロバイダー (google, line など)
+  provider_id      String?  // 認証プロバイダーから提供されるID
   stripe_customer_id String?
   created_at       DateTime @default(now())
   updated_at       DateTime @updatedAt
   subscription     Subscription?
+  
+  @@unique([provider, provider_id]) // プロバイダーとプロバイダーIDの組み合わせは一意
 }
 
 model Subscription {
