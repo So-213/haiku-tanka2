@@ -110,7 +110,7 @@ export default function AccountPage() {
                 </h1>
                 <div className="name">
                     <span>{session.user?.name}</span>
-                    <p className="user-id">ユーザーID: {session.user?.id || "未設定"}</p>
+                    {/* <p className="user-id">ユーザーID: {session.user?.id || "未設定"}</p> */}
                 </div>
 
                 {/* デバッグ情報（開発中のみ表示） */}
@@ -125,13 +125,13 @@ export default function AccountPage() {
                 </div>
 
                 <div className="subscription-status">
-                    <h2>サブスクリプション状態</h2>
+                    {/* <h2>サブスクリプション状態</h2> */}
                     {loading ? (
                         <p>読み込み中...</p>
                     ) : subscription ? (
                         <div>
                             <p>ステータス: {subscription.status === 'active' ? 'サブスク加入中' : '無料プラン'}</p>
-                            <p>サブスクリプションID: <span className="subscription-id">{subscription.id}</span></p>
+                            {/* <p>サブスクリプションID: <span className="subscription-id">{subscription.id}</span></p> */}
                             {subscription.current_period_end && (
                                 <p>次回更新日: {new Date(subscription.current_period_end).toLocaleDateString()}</p>
                             )}
