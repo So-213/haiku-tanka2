@@ -17,6 +17,19 @@ const prisma = global.prisma || new PrismaClient({
   }
 });
 
+// 接続をクリーンアップする関数
+const cleanup = async () => {
+  if (prisma) {
+    await prisma.$disconnect();
+  }
+};
+
+// プロセス終了時に接続をクリーンアップ
+if (process.env.NODE_ENV === 'production') {
+  process.on('SIGTERM', cleanup);
+  process.on('SIGINT', cleanup);
+}
+
 if (process.env.NODE_ENV !== 'production') {
   global.prisma = prisma;
 }

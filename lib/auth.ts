@@ -5,6 +5,18 @@ import Google from "next-auth/providers/google"
 import LINE from "next-auth/providers/line"
 import { prisma } from "./prisma"
 
+// 認証処理中のPrisma接続を管理する関数
+async function withPrismaConnection<T>(operation: () => Promise<T>): Promise<T> {
+  try {
+    return await operation();
+  } catch (error) {
+    console.error('Prisma operation error:', error);
+    throw error;
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
 export const { auth, handlers, signIn, signOut } = NextAuth({   //オブジェクトを渡してオブジェクトを返してくれる NextAuth
   providers: [
     Google({
@@ -32,39 +44,45 @@ export const { auth, handlers, signIn, signOut } = NextAuth({   //オブジェ�
         console.log('認証プロバイダー:', account.provider);
         console.log('プロバイダーID:', account.providerAccountId);
         
-        // 認証プロバイダー種類と認証プロバイダーid（Sub）を使ってuser.idを取得
-        let dbUser = await prisma.user.findFirst({
-          where: {
-            provider: account.provider,
-            provider_id: account.providerAccountId,
-          },
+        // Prisma接続を管理しながらユーザー検索
+        let dbUser = await withPrismaConnection(async () => {
+          return await prisma.user.findFirst({
+            where: {
+              provider: account.provider,
+              provider_id: account.providerAccountId,
+            },
+          });
         });
         
         // ユーザーが見つからない場合は新規作成
         if (!dbUser) {
-          dbUser = await prisma.user.create({
-            data: {
-              name: user.name || 'Unknown User',
-              email: user.email || null,
-              provider: account.provider,
-              provider_id: account.providerAccountId,
-              stripe_customer_id: null,
-            },
+          dbUser = await withPrismaConnection(async () => {
+            return await prisma.user.create({
+              data: {
+                name: user.name || 'Unknown User',
+                email: user.email || null,
+                provider: account.provider,
+                provider_id: account.providerAccountId,
+                stripe_customer_id: null,
+              },
+            });
           });
           console.log('新規ユーザーを作成しました:', dbUser.id);
         } else {
           // 既存ユーザーは必要に応じて更新
-          dbUser = await prisma.user.update({
-            where: { id: dbUser.id },
-            data: {
-              name: user.name || dbUser.name,
-              email: user.email || dbUser.email,
-            },
+          const updatedUser = await withPrismaConnection(async () => {
+            return await prisma.user.update({
+              where: { id: dbUser!.id },
+              data: {
+                name: user.name || dbUser!.name,
+                email: user.email || dbUser!.email,
+              },
+            });
           });
+          dbUser = updatedUser;
           console.log('既存ユーザーを更新しました:', dbUser.id);
         }
         
-        // ユーザーIDを強制的に設定（これが重要）
         user.id = dbUser.id;
       }
       return true;
