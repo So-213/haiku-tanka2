@@ -8,7 +8,14 @@ declare global {
 }
 
 // 開発環境でのホットリロード時に複数のPrismaClientインスタンスが作成されるのを防ぐ
-const prisma = global.prisma || new PrismaClient();
+const prisma = global.prisma || new PrismaClient({
+  log: ['error'],
+  datasources: {
+    db: {
+      url: process.env.DATABASE_URL
+    }
+  }
+});
 
 if (process.env.NODE_ENV !== 'production') {
   global.prisma = prisma;
