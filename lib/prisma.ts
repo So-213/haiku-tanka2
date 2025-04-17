@@ -17,6 +17,7 @@ const prisma = global.prisma || new PrismaClient({
   }
 });
 
+
 // 接続をクリーンアップする関数
 const cleanup = async () => {
   if (prisma) {
