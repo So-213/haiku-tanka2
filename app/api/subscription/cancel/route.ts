@@ -36,14 +36,13 @@ export async function POST(request: Request) {
       },
       data: {
         cancel_at_period_end: true,
-        status: 'canceling',
       },
     });
 
-    console.log('Subscription cancelled:', {
+    console.log('Subscription cancellation scheduled:', {
       id: updatedSubscription.id,
       user_id: updatedSubscription.user_id,
-      status: updatedSubscription.status
+      current_period_end: updatedSubscription.current_period_end
     });
 
     return NextResponse.json(updatedSubscription);

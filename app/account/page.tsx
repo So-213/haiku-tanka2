@@ -113,6 +113,8 @@ export default function AccountPage() {
         }
     };
 
+
+    
     if (!session) {
         return <div>ログインが必要です</div>;
     }
@@ -162,11 +164,10 @@ export default function AccountPage() {
                     ) : subscription ? (
                         <div>
                             <p>ステータス: {subscription.status === 'active' ? 'サブスク加入中' : '無料プラン'}</p>
-                            {/* <p>サブスクリプションID: <span className="subscription-id">{subscription.id}</span></p> */}
                             {subscription.current_period_end && (
                                 <p>次回更新日: {new Date(subscription.current_period_end).toLocaleDateString()}</p>
                             )}
-                            {subscription.status === 'active' && (
+                            {subscription.status === 'active' && !subscription.cancel_at_period_end && (
                                 <button
                                     onClick={handleCancelSubscription}
                                     className="cancel-subscription-button"
@@ -174,6 +175,14 @@ export default function AccountPage() {
                                 >
                                     {loading ? '処理中...' : 'サブスクを解約する'}
                                 </button>
+                            )}
+                            {subscription.cancel_at_period_end && (
+                                <div className="cancellation-scheduled">
+                                    <p className="cancellation-message">サブスク解約予定</p>
+                                    <p className="cancellation-date">
+                                        解約日: {new Date(subscription.current_period_end).toLocaleDateString()}
+                                    </p>
+                                </div>
                             )}
                         </div>
                     ) : (
@@ -312,6 +321,23 @@ export default function AccountPage() {
                 }
                 .cancel-subscription-button:hover {
                     background-color: #e04876;
+                }
+                .cancellation-scheduled {
+                    margin-top: 15px;
+                    padding: 10px;
+                    background-color: #f8f9fa;
+                    border: 1px solid #dee2e6;
+                    border-radius: 8px;
+                }
+                .cancellation-message {
+                    color: #6c757d;
+                    font-weight: 500;
+                    margin: 0;
+                }
+                .cancellation-date {
+                    color: #6c757d;
+                    font-size: 0.9em;
+                    margin: 5px 0 0 0;
                 }
             `}</style>
         </div>
