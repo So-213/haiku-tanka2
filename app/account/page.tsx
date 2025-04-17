@@ -82,6 +82,37 @@ export default function AccountPage() {
         }
     };
 
+    const handleCancelSubscription = async () => {
+        try {
+            setLoading(true);
+            const response = await fetch('/api/subscription/cancel', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    userId: session?.user?.id,
+                }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data && Object.keys(data).length > 0) {
+                    setSubscription(data);
+                } else {
+                    console.error('サブスクリプションデータが空です');
+                    setSubscription(null);
+                }
+            } else {
+                console.error('Failed to cancel subscription:', response.status);
+            }
+        } catch (error) {
+            console.error('Error cancelling subscription:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     if (!session) {
         return <div>ログインが必要です</div>;
     }
@@ -134,6 +165,15 @@ export default function AccountPage() {
                             {/* <p>サブスクリプションID: <span className="subscription-id">{subscription.id}</span></p> */}
                             {subscription.current_period_end && (
                                 <p>次回更新日: {new Date(subscription.current_period_end).toLocaleDateString()}</p>
+                            )}
+                            {subscription.status === 'active' && (
+                                <button
+                                    onClick={handleCancelSubscription}
+                                    className="cancel-subscription-button"
+                                    disabled={loading}
+                                >
+                                    {loading ? '処理中...' : 'サブスクを解約する'}
+                                </button>
                             )}
                         </div>
                     ) : (
@@ -258,6 +298,20 @@ export default function AccountPage() {
                 .debug-info pre {
                     white-space: pre-wrap;
                     word-break: break-all;
+                }
+                .cancel-subscription-button {
+                    margin-top: 15px;
+                    padding: 10px 20px;
+                    font-size: 16px;
+                    color: white;
+                    background-color: #ff5a8d;
+                    border: none;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    transition: background-color 0.3s ease;
+                }
+                .cancel-subscription-button:hover {
+                    background-color: #e04876;
                 }
             `}</style>
         </div>
