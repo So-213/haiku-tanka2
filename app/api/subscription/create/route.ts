@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { prisma, withPrismaConnection } from '@/lib/prisma';
 
 export async function POST(request: Request) {
   try {
@@ -15,8 +15,10 @@ export async function POST(request: Request) {
     }
 
     // まずユーザーが存在するか確認
-    const user = await prisma.user.findUnique({
-      where: { id: userId }
+    const user = await withPrismaConnection(async () => {
+      return await prisma.user.findUnique({
+        where: { id: userId }
+      });
     });
 
     if (!user) {
@@ -30,10 +32,12 @@ export async function POST(request: Request) {
     console.log(`Found user: ${user.id} (${user.name})`);
 
     // 既存のサブスクリプションをチェック
-    const existingSubscription = await prisma.subscription.findFirst({
-      where: {
-        user_id: userId,
-      },
+    const existingSubscription = await withPrismaConnection(async () => {
+      return await prisma.subscription.findFirst({
+        where: {
+          user_id: userId,
+        },
+      });
     });
 
     if (existingSubscription) {
@@ -42,15 +46,17 @@ export async function POST(request: Request) {
     }
 
     // 新しいサブスクリプションを作成
-    const subscription = await prisma.subscription.create({
-      data: {
-        user_id: userId,
-        stripe_subscription_id: `sub_${Date.now()}`, // 実際のStripe実装時には本物のIDを使用
-        status: 'active',
-        current_period_start: new Date(),
-        current_period_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30日後
-        cancel_at_period_end: false,
-      },
+    const subscription = await withPrismaConnection(async () => {
+      return await prisma.subscription.create({
+        data: {
+          user_id: userId,
+          stripe_subscription_id: `sub_${Date.now()}`, // 実際のStripe実装時には本物のIDを使用
+          status: 'active',
+          current_period_start: new Date(),
+          current_period_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30日後
+          cancel_at_period_end: false,
+        },
+      });
     });
 
     console.log('Created subscription:', {

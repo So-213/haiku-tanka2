@@ -17,6 +17,18 @@ if (process.env.NODE_ENV === 'production') {
   prisma = global.prisma;
 }
 
+// Serverless環境でのコネクション管理のためのラッパー関数
+export async function withPrismaConnection<T>(operation: () => Promise<T>): Promise<T> {
+  try {
+    return await operation();
+  } catch (error) {
+    console.error('Prisma operation error:', error);
+    throw error;
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
 export { prisma };
 
 // 接続をクリーンアップする関数

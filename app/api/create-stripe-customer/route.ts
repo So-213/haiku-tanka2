@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 // import Stripe from 'stripe'
-import { prisma } from '@/lib/prisma'
+import { prisma, withPrismaConnection } from '@/lib/prisma'
 
 
 
@@ -22,8 +22,10 @@ export async function POST(request: Request) {
     }
 
     // ユーザーが存在するか確認
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
+    const user = await withPrismaConnection(async () => {
+      return await prisma.user.findUnique({
+        where: { id: userId },
+      });
     });
 
     if (!user) {
@@ -45,10 +47,12 @@ export async function POST(request: Request) {
 
     // 2. ユーザーのstripe_customer_idを更新
     try {
-      await prisma.user.update({
-        where: { id: userId },
-        data: { stripe_customer_id: 'dummy_customer_id' }, // 一時的なダミー値
-      })
+      await withPrismaConnection(async () => {
+        await prisma.user.update({
+          where: { id: userId },
+          data: { stripe_customer_id: 'dummy_customer_id' }, // 一時的なダミー値
+        });
+      });
       console.log('Updated user with Stripe customer ID:', userId);
     } catch (updateError) {
       console.error('Error updating user with Stripe customer ID:', updateError);
