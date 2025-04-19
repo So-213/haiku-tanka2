@@ -21,10 +21,16 @@ export async function GET(request: Request) {
     console.log(`Found ${subscriptionsToUpdate.length} subscriptions to update`);
 
     // 各サブスクリプションのステータスを更新
-    const updatePromises = subscriptionsToUpdate.map(subscription =>
+    const updatePromises = subscriptionsToUpdate.map((subscription: { id: string }) =>
       prisma.subscription.update({
         where: { id: subscription.id },
-        data: { status: 'canceling' },
+        data: {
+          status: null,
+          current_period_start: null,
+          current_period_end: null,
+          cancel_at_period_end: null,
+          updated_at: new Date(),
+        },
       })
     );
 
