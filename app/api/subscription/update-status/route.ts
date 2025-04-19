@@ -21,30 +21,39 @@ export async function GET(request: Request) {
     console.log(`Found ${subscriptionsToUpdate.length} subscriptions to update`);
 
     // 各サブスクリプションのステータスを更新
-    const updatePromises = subscriptionsToUpdate.map((subscription: { id: string }) =>
-      prisma.subscription.update({
-        where: { id: subscription.id },
+    const updatePromises = subscriptionsToUpdate.map(async (subscription: {
+      id: string;
+      user_id: string;
+      stripe_subscription_id: string;
+      status: string;
+      current_period_start: Date;
+      current_period_end: Date;
+      cancel_at_period_end: boolean;
+    }) => {
+      // 期限切れのサブスクリプションをtrashテーブルに移動
+      await prisma.subscriptionTrash.create({
         data: {
-          status: '', // 空の文字列を設定
-          current_period_start: new Date(0), // 1970-01-01 00:00:00 UTC
-          current_period_end: new Date(0), // 1970-01-01 00:00:00 UTC
-          cancel_at_period_end: false, // falseを設定
-          updated_at: new Date(),
+          user_id: subscription.user_id,
+          stripe_subscription_id: subscription.stripe_subscription_id,
+          status: subscription.status,
+          current_period_start: subscription.current_period_start,
+          current_period_end: subscription.current_period_end,
+          cancel_at_period_end: subscription.cancel_at_period_end,
+          original_subscription_id: subscription.id,
         },
-      })
-    );
+      });
 
-    const updatedSubscriptions = await Promise.all(updatePromises);
+      // 元のサブスクリプションを削除
+      return prisma.subscription.delete({
+        where: { id: subscription.id },
+      });
+    });
 
-    console.log('Updated subscriptions:', updatedSubscriptions.map(sub => ({
-      id: sub.id,
-      user_id: sub.user_id,
-      status: sub.status
-    })));
+    await Promise.all(updatePromises);
 
     return NextResponse.json({
-      message: `Updated ${updatedSubscriptions.length} subscriptions`,
-      updatedSubscriptions
+      message: `Updated ${subscriptionsToUpdate.length} subscriptions`,
+      updatedSubscriptions: subscriptionsToUpdate
     });
   } catch (error) {
     console.error('Error updating subscription statuses:', error);

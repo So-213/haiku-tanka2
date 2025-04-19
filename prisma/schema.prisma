@@ -43,3 +43,16 @@ model Subscription {
   user                 User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
+model SubscriptionTrash {
+  id                    String    @id @default(uuid())
+  user_id              String
+  stripe_subscription_id String
+  status               String
+  current_period_start DateTime
+  current_period_end   DateTime
+  cancel_at_period_end Boolean
+  created_at           DateTime  @default(now())
+  deleted_at           DateTime  @default(now())
+  original_subscription_id String
+}
+
