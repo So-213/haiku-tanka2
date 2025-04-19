@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-export async function POST(request: Request) {
+export async function GET(request: Request) {
   try {
     // 本日の日付を取得（時刻部分を00:00:00に設定）
     const today = new Date();
