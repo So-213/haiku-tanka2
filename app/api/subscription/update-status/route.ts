@@ -25,10 +25,10 @@ export async function GET(request: Request) {
       prisma.subscription.update({
         where: { id: subscription.id },
         data: {
-          status: null,
-          current_period_start: null,
-          current_period_end: null,
-          cancel_at_period_end: null,
+          status: '', // 空の文字列を設定
+          current_period_start: new Date(0), // 1970-01-01 00:00:00 UTC
+          current_period_end: new Date(0), // 1970-01-01 00:00:00 UTC
+          cancel_at_period_end: false, // falseを設定
           updated_at: new Date(),
         },
       })
