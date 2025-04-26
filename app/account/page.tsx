@@ -4,53 +4,62 @@ import { signOut } from "next-auth/react";
 import { useSession } from "next-auth/react"
 import { useEffect, useState } from "react";
 
+interface Subscription {
+    id: string;
+    user_id: string;
+    stripe_subscription_id: string;
+    status: string;
+    current_period_start: string;
+    current_period_end: string;
+    cancel_at_period_end: boolean;
+    created_at: string;
+    updated_at: string;
+}
+
 export default function AccountPage() {
-    const { data: session } = useSession(); 
-    const [subscription, setSubscription] = useState<any>(null);
+    const { data: session, status } = useSession();
     const [loading, setLoading] = useState(true);
+    const [subscription, setSubscription] = useState<Subscription | null>(null);
 
     useEffect(() => {
         const fetchSubscription = async () => {
-            setLoading(true);
-            if (session?.user?.id) {
-                console.log('現在のユーザーID:', session.user.id);
-                try {
-                    const response = await fetch(`/api/subscription?userId=${session.user.id}`);
-                    if (response.ok) {
-                        const data = await response.json();
-                        console.log('取得したサブスクリプションデータ:', data);
-                        if (data && Object.keys(data).length > 0) {
-                            console.log('サブスクリプションデータを更新します');
-                            setSubscription(data);
-                        } else {
-                            console.log('サブスクリプションデータが空です');
-                            setSubscription(null);
-                        }
-                    } else {
-                        const errorText = await response.text();
-                        console.error('Subscription API response not OK:', response.status, errorText);
-                        setSubscription(null);
-                    }
-                } catch (error) {
-                    console.error('Error fetching subscription:', error);
+            if (status === 'loading') {
+                return;
+            }
+
+            if (!session?.user?.id) {
+                console.error('セッションまたはユーザーIDが見つかりません');
+                setLoading(false);
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/subscription?userId=${session.user.id}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setSubscription(data);
+                } else {
+                    console.error('Failed to fetch subscription:', response.status);
                     setSubscription(null);
                 }
-            } else {
-                console.log('セッションユーザーIDがありません');
+            } catch (error) {
+                console.error('Error fetching subscription:', error);
                 setSubscription(null);
+            } finally {
+                setLoading(false);
             }
-            setLoading(false);
         };
 
-        if (session?.user) {
-            fetchSubscription();
-        } else {
-            setLoading(false);
-        }
-    }, [session]);
+        fetchSubscription();
+    }, [session, status]);
 
     const handleSubscribe = async () => {
         try {
+            if (!session?.user?.id) {
+                console.error('ユーザーIDが見つかりません');
+                return;
+            }
+
             setLoading(true);
             const response = await fetch('/api/subscription/create', {
                 method: 'POST',
@@ -58,7 +67,7 @@ export default function AccountPage() {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    userId: session?.user?.id,
+                    userId: session.user.id,
                 }),
             });
 
@@ -71,7 +80,8 @@ export default function AccountPage() {
                     setSubscription(null);
                 }
             } else {
-                console.error('Failed to create subscription:', response.status);
+                const errorData = await response.json();
+                console.error('Failed to create subscription:', response.status, errorData);
                 setSubscription(null);
             }
         } catch (error) {
