@@ -57,7 +57,7 @@ export default function Page() {
               setPoem={setPoem}
               isLoading={isLoading}
               onSubmit={handleSubmit}
-              isLoggedIn={!!session}
+              isLoggedIn={session}
               onLoginClick={() => setShowLoginModal(true)}
             />
           </CardContent>
