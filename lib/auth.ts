@@ -23,24 +23,36 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma), //providerが違ってもidが一意になるようにする
   providers: [
     Google({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      clientId: process.env.AUTH_GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.AUTH_GOOGLE_CLIENT_SECRET!,
+      allowDangerousEmailAccountLinking: true,
     }),
     LINE({
-      clientId: process.env.AUTH_LINE_ID,
-      clientSecret: process.env.AUTH_LINE_SECRET,
+      clientId: process.env.AUTH_LINE_CLIENT_ID,
+      clientSecret: process.env.AUTH_LINE_CLIENT_SECRET,
       issuer: 'https://access.line.me',
       checks: ['pkce', 'state'],
+      allowDangerousEmailAccountLinking: true,
     }),
   ],
-  session: { strategy: "jwt" },
+  session: { strategy: "jwt" },// jwtから情報を取得してくるようにする設定
   trustHost: true,
   secret: process.env.NEXTAUTH_SECRET,
-
+  cookies: {
+    csrfToken: {
+      name: 'next-auth.csrf-token',
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production'
+      }
+    }
+  },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.userId = user.id;
+        token.userId = user.id;// User.idとJWTを紐付けるために、userIdをJWTの方に渡す
       }
       return token;
     },
