@@ -61,18 +61,65 @@ export default function AccountPage() {
             }
 
             setLoading(true);
-            const response = await fetch('/api/subscription/create', {
+
+            // 1. Stripe顧客の作成
+            const customerResponse = await fetch('/api/stripe/customer', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
                     userId: session.user.id,
+                    email: session.user.email,
+                    name: session.user.name,
                 }),
             });
 
-            if (response.ok) {
-                const data = await response.json();
+            if (!customerResponse.ok) {
+                const errorData = await customerResponse.json();
+                console.error('Failed to create Stripe customer:', customerResponse.status, errorData);
+                throw new Error('Failed to create Stripe customer');
+            }
+
+            const { customerId } = await customerResponse.json();
+
+            // 2. Stripeサブスクリプションの作成
+            const subscriptionResponse = await fetch('/api/stripe/subscription', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    customerId,
+                    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID, // 環境変数から取得
+                }),
+            });
+
+            if (!subscriptionResponse.ok) {
+                const errorData = await subscriptionResponse.json();
+                console.error('Failed to create Stripe subscription:', subscriptionResponse.status, errorData);
+                throw new Error('Failed to create Stripe subscription');
+            }
+
+            const subscriptionData = await subscriptionResponse.json();
+
+            // 3. DBへの保存
+            const dbResponse = await fetch('/api/db/subscription', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    userId: session.user.id,
+                    stripeSubscriptionId: subscriptionData.subscriptionId,
+                    status: subscriptionData.status,
+                    currentPeriodStart: subscriptionData.currentPeriodStart,
+                    currentPeriodEnd: subscriptionData.currentPeriodEnd,
+                }),
+            });
+
+            if (dbResponse.ok) {
+                const data = await dbResponse.json();
                 if (data && Object.keys(data).length > 0) {
                     setSubscription(data);
                 } else {
@@ -80,12 +127,12 @@ export default function AccountPage() {
                     setSubscription(null);
                 }
             } else {
-                const errorData = await response.json();
-                console.error('Failed to create subscription:', response.status, errorData);
+                const errorData = await dbResponse.json();
+                console.error('Failed to save subscription to database:', dbResponse.status, errorData);
                 setSubscription(null);
             }
         } catch (error) {
-            console.error('Error creating subscription:', error);
+            console.error('Error in subscription process:', error);
             setSubscription(null);
         } finally {
             setLoading(false);

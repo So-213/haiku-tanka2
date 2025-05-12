@@ -1,12 +1,12 @@
+// app/api/stripe/customer/route.ts
+
 import { NextResponse } from 'next/server'
-// import Stripe from 'stripe'
+import Stripe from 'stripe'
 import { prisma, withPrismaConnection } from '@/lib/prisma'
 
-
-
-// const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-//   apiVersion: '2023-10-16',
-// })
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: '2025-03-31.basil',
+})
 
 export async function POST(request: Request) {
   try {
@@ -36,30 +36,36 @@ export async function POST(request: Request) {
       )
     }
 
+    // 既にStripe顧客IDが存在する場合はそれを返す
+    if (user.stripe_customer_id) {
+      console.log('User already has a Stripe customer ID:', user.stripe_customer_id);
+      return NextResponse.json({ customerId: user.stripe_customer_id });
+    }
+
     // 1. Stripeの顧客を作成
-    // const customer = await stripe.customers.create({
-    //   email,
-    //   name,
-    //   metadata: {
-    //     userId,
-    //   },
-    // })
+    const customer = await stripe.customers.create({
+      email,
+      name,
+      metadata: {
+        userId,
+      },
+    })
 
     // 2. ユーザーのstripe_customer_idを更新
     try {
       await withPrismaConnection(async () => {
         await prisma.user.update({
           where: { id: userId },
-          data: { stripe_customer_id: 'dummy_customer_id' }, // 一時的なダミー値
+          data: { stripe_customer_id: customer.id },
         });
       });
-      console.log('Updated user with Stripe customer ID:', userId);
+      console.log('Updated user with Stripe customer ID:', customer.id);
     } catch (updateError) {
       console.error('Error updating user with Stripe customer ID:', updateError);
       throw updateError;
     }
 
-    return NextResponse.json({ customerId: 'dummy_customer_id' }) // 一時的なダミー値
+    return NextResponse.json({ customerId: customer.id })
   } catch (error) {
     console.error('Error creating Stripe customer:', error)
     return NextResponse.json(
