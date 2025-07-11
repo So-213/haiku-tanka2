@@ -3,6 +3,30 @@
 import { signOut } from "next-auth/react"; 
 import { useSession } from "next-auth/react"
 import { useEffect, useState } from "react";
+import { loadStripe } from '@stripe/stripe-js';
+
+// 有効な日付かどうかをチェックするヘルパー関数
+const isValidDate = (dateString: string | number | null | undefined): boolean => {
+    if (!dateString) return false;
+    const date = new Date(dateString as string | number);
+    return !isNaN(date.getTime());
+};
+
+// 安全にISO文字列に変換するヘルパー関数
+const safeToISOString = (dateString: string | number | null | undefined): string => {
+    if (!isValidDate(dateString)) {
+        return new Date().toISOString();
+    }
+    return new Date(dateString as string | number).toISOString();
+};
+
+// 安全にローカル日付文字列に変換するヘルパー関数
+const safeToLocaleDateString = (dateString: string | null | undefined): string => {
+    if (!isValidDate(dateString)) {
+        return new Date().toLocaleDateString();
+    }
+    return new Date(dateString as string).toLocaleDateString();
+};
 
 interface Subscription {
     id: string;
@@ -50,6 +74,25 @@ export default function AccountPage() {
             }
         };
 
+        // URLパラメータをチェック（Stripeからのリダイレクト後）
+        const urlParams = new URLSearchParams(window.location.search);
+        const success = urlParams.get('success');
+        const canceled = urlParams.get('canceled');
+
+        if (success === 'true') {
+            // 支払い成功時の処理
+            console.log('Payment successful');
+            // サブスクリプション情報を再取得
+            fetchSubscription();
+            // URLパラメータをクリア
+            window.history.replaceState({}, document.title, window.location.pathname);
+        } else if (canceled === 'true') {
+            // 支払いキャンセル時の処理
+            console.log('Payment canceled');
+            // URLパラメータをクリア
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+
         fetchSubscription();
     }, [session, status]);
 
@@ -91,9 +134,10 @@ export default function AccountPage() {
                 },
                 body: JSON.stringify({
                     customerId,
-                    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID, // 環境変数から取得
+                    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID, 
                 }),
             });
+
 
             if (!subscriptionResponse.ok) {
                 const errorData = await subscriptionResponse.json();
@@ -103,34 +147,40 @@ export default function AccountPage() {
 
             const subscriptionData = await subscriptionResponse.json();
 
-            // 3. DBへの保存
-            const dbResponse = await fetch('/api/db/subscription', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    userId: session.user.id,
-                    stripeSubscriptionId: subscriptionData.subscriptionId,
-                    status: subscriptionData.status,
-                    currentPeriodStart: subscriptionData.currentPeriodStart,
-                    currentPeriodEnd: subscriptionData.currentPeriodEnd,
-                }),
-            });
-
-            if (dbResponse.ok) {
-                const data = await dbResponse.json();
-                if (data && Object.keys(data).length > 0) {
-                    setSubscription(data);
-                } else {
-                    console.error('サブスクリプションデータが空です');
-                    setSubscription(null);
+            // Stripe側の決済画面にリダイレクト
+            if (subscriptionData.sessionId) {
+                const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+                if (!stripe) {
+                    throw new Error('Failed to load Stripe');
                 }
-            } else {
-                const errorData = await dbResponse.json();
-                console.error('Failed to save subscription to database:', dbResponse.status, errorData);
-                setSubscription(null);
+
+                // Stripe側の決済画面にリダイレクト
+                const { error } = await stripe.redirectToCheckout({
+                    sessionId: subscriptionData.sessionId
+                });
+                
+                if (error) {
+                    console.error('Redirect to checkout failed:', error);
+                    throw new Error('Redirect to checkout failed');
+                }
+                
+                // リダイレクト後はこのコードは実行されない
+                return;
             }
+
+            // リダイレクト後の処理（success_urlから戻ってきた場合）
+            // この部分は実際には実行されないが、念のため残しておく
+            setSubscription({
+                id: subscriptionData.subscriptionId || 'pending',
+                user_id: session.user.id,
+                stripe_subscription_id: subscriptionData.subscriptionId || 'pending',
+                status: subscriptionData.status || 'pending',
+                current_period_start: new Date().toISOString(),
+                current_period_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30日後
+                cancel_at_period_end: false,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+            });
         } catch (error) {
             console.error('Error in subscription process:', error);
             setSubscription(null);
@@ -222,7 +272,7 @@ export default function AccountPage() {
                         <div>
                             <p>ステータス: {subscription.status === 'active' ? 'サブスク加入中' : '無料プラン'}</p>
                             {subscription.current_period_end && (
-                                <p>次回更新日: {new Date(subscription.current_period_end).toLocaleDateString()}</p>
+                                <p>次回更新日: {safeToLocaleDateString(subscription.current_period_end)}</p>
                             )}
                             {subscription.status === 'active' && !subscription.cancel_at_period_end && (
                                 <button
@@ -237,7 +287,7 @@ export default function AccountPage() {
                                 <div className="cancellation-scheduled">
                                     <p className="cancellation-message">サブスク解約予定</p>
                                     <p className="cancellation-date">
-                                        解約日: {new Date(subscription.current_period_end).toLocaleDateString()}
+                                        解約日: {safeToLocaleDateString(subscription.current_period_end)}
                                     </p>
                                 </div>
                             )}

@@ -4,6 +4,8 @@ import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { prisma, withPrismaConnection } from '@/lib/prisma'
 
+
+//web上stripe内の顧客情報とDB上の顧客情報の紐付け
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-03-31.basil',
 })
