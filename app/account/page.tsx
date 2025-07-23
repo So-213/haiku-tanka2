@@ -287,7 +287,10 @@ export default function AccountPage() {
                                 <div className="cancellation-scheduled">
                                     <p className="cancellation-message">サブスク解約予定</p>
                                     <p className="cancellation-date">
-                                        解約日: {safeToLocaleDateString(subscription.current_period_end)}
+                                        解約日（JST）: {safeToLocaleDateString(subscription.current_period_end)}
+                                    </p>
+                                    <p className="cancellation-date">
+                                        もう一度加入する場合は、この翌日にサブスクに加入するボタンを押してください。
                                     </p>
                                 </div>
                             )}
