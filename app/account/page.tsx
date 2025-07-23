@@ -254,7 +254,7 @@ export default function AccountPage() {
                 </div>
 
                 {/* デバッグ情報（開発中のみ表示） */}
-                <div className="debug-info">
+                {/* <div className="debug-info">
                     <h3>デバッグ情報</h3>
                     <pre>
                         {JSON.stringify({
@@ -262,7 +262,7 @@ export default function AccountPage() {
                             subscription: subscription
                         }, null, 2)}
                     </pre>
-                </div>
+                </div> */}
 
                 <div className="subscription-status">
                     {/* <h2>サブスクリプション状態</h2> */}
