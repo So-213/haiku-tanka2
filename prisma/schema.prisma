@@ -56,6 +56,7 @@ model User {
   subscription  Subscription?
   accounts      Account[]
   sessions      Session[]
+  messages      Message[]
   
   @@unique([provider, provider_id])
 }
