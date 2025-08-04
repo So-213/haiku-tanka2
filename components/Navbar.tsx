@@ -27,8 +27,15 @@ export default function Navbar() {
       {/* ナビゲーションメニュー */}
       <ul className={`menu ${isOpen ? "open" : ""}`}>  
         <li>
+            <Link href="/">ホーム</Link>
+        </li> 
+        <li>
             <Link href="/account">アカウント情報</Link>
         </li> 
+        <li>
+          <Link href="/torihikihou">特定商取引法に基づく表記</Link>
+        </li> 
+
       </ul>
 
 
