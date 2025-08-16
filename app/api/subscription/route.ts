@@ -49,7 +49,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json(subscription)
   } catch (error) {
-    console.error('Error fetching subscription:', error)
+    console.error('Error fetching subscription:', error || 'Unknown error')
     return NextResponse.json(
       { error: 'Failed to fetch subscription' },
       { status: 500 }

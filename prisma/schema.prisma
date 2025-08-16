@@ -56,7 +56,6 @@ model User {
   subscription  Subscription?
   accounts      Account[]
   sessions      Session[]
-  messages      Message[]
   
   @@unique([provider, provider_id])
 }
@@ -93,14 +92,5 @@ model SubscriptionTrash {
   created_at           DateTime  @default(now())
   deleted_at           DateTime  @default(now())
   original_subscription_id String
-}
-
-model Message {
-  id        String   @id @default(cuid())
-  content   String
-  user_id   String
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-  user      User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 

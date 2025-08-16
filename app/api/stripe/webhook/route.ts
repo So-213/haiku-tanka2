@@ -19,10 +19,16 @@ export async function POST(request: Request) {
     const headersList = await headers()
     const signature = headersList.get('stripe-signature')!
 
+    console.log('=== WEBHOOK RECEIVED ===')
+    console.log('Headers:', Object.fromEntries(headersList.entries()))
+    console.log('Body length:', body.length)
+    console.log('Signature:', signature ? 'Present' : 'Missing')
+
     let event: Stripe.Event
 
     try {
       event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
+      console.log('Webhook signature verification: SUCCESS')
     } catch (err) {
       console.error('Webhook signature verification failed:', err)
       return NextResponse.json(
@@ -32,6 +38,7 @@ export async function POST(request: Request) {
     }
 
     console.log('Received webhook event:', event.type)
+    console.log('Event ID:', event.id)
 
     // checkout.session.completed イベントの処理
     if (event.type === 'checkout.session.completed') {
