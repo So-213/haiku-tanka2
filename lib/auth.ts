@@ -28,8 +28,8 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       allowDangerousEmailAccountLinking: true,
     }),
     LINE({
-      clientId: process.env.AUTH_LINE_CLIENT_ID,
-      clientSecret: process.env.AUTH_LINE_CLIENT_SECRET,
+      clientId: process.env.AUTH_LINE_ID,
+      clientSecret: process.env.AUTH_LINE_SECRET,
       issuer: 'https://access.line.me',
       checks: ['pkce', 'state'],
       allowDangerousEmailAccountLinking: true,
@@ -37,7 +37,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   ],
   session: { strategy: "jwt" },// jwtから情報を取得してくるようにする設定
   trustHost: true,
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET,
   cookies: {
     csrfToken: {
       name: 'next-auth.csrf-token',
