@@ -32,9 +32,9 @@ export default function Navbar() {
         <li>
             <Link href="/account">アカウント情報</Link>
         </li> 
-        <li>
+        {/* <li>
           <Link href="/torihikihou">特定商取引法に基づく表記</Link>
-        </li> 
+        </li>  */}
 
       </ul>
 

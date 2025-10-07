@@ -264,9 +264,9 @@ export default function AccountPage() {
                     </pre>
                 </div> */}
 
-                <div className="subscription-status">
+                {/* <div className="subscription-status"> */}
                     {/* <h2>サブスクリプション状態</h2> */}
-                    {loading ? (
+                    {/* {loading ? (
                         <p>読み込み中...</p>
                     ) : subscription ? (
                         <div>
@@ -307,7 +307,7 @@ export default function AccountPage() {
                             </button>
                         </div>
                     )}
-                </div>
+                </div> */}
 
                 {/* ログアウトボタン */}
                 <button className="logout-button" onClick={() => signOut({ callbackUrl: "/" })}>ログアウト</button>        
