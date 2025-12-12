@@ -1,20 +1,16 @@
 'use client'
 
 import { useState } from "react"
-import { useSession } from "next-auth/react"
 import { Card, CardContent } from "@/components/ui/card"
 import PoemForm from "@/components/PoemForm"
 import ResponseBox from "@/components/ResponseBox"
-import LoginModal from "@/components/LoginModal"
 
 
 
 export default function Page() {
   const [poem, setPoem] = useState("古池や　蛙飛びこむ　水の音")
   const [response, setResponse] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const [showLoginModal, setShowLoginModal] = useState(false)
-  const { data: session } = useSession(); 
+  const [isLoading, setIsLoading] = useState(false) 
 
   const handleSubmit = async () => {
     if (!poem.trim()) return
@@ -57,14 +53,11 @@ export default function Page() {
               setPoem={setPoem}
               isLoading={isLoading}
               onSubmit={handleSubmit}
-              isLoggedIn={session}
-              onLoginClick={() => setShowLoginModal(true)}
             />
           </CardContent>
         </Card>
 
         <ResponseBox response={response} />
-        <LoginModal show={session === null && showLoginModal} onCancel={() => setShowLoginModal(false)} />
       </div>
     </main>
   )

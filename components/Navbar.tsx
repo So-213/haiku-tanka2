@@ -5,17 +5,11 @@
 
 import Link from "next/link";
 import { useState } from "react";  //開閉状態管理
-import { useSession } from "next-auth/react"
 
 
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const { data: session } = useSession(); 
-
-
-  
-  if (!session) return null;
 
   return (
     <nav className="navbar">
@@ -28,9 +22,6 @@ export default function Navbar() {
       <ul className={`menu ${isOpen ? "open" : ""}`}>  
         <li>
             <Link href="/">ホーム</Link>
-        </li> 
-        <li>
-            <Link href="/account">アカウント情報</Link>
         </li> 
         {/* <li>
           <Link href="/torihikihou">特定商取引法に基づく表記</Link>

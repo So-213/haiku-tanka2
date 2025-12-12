@@ -1,7 +1,14 @@
 'use client'
 import { Button } from "@/components/ui/button"
 
-export default function PoemForm({ poem, setPoem, isLoading, onSubmit, isLoggedIn, onLoginClick }) {
+interface PoemFormProps {
+  poem: string
+  setPoem: (poem: string) => void
+  isLoading: boolean
+  onSubmit: () => void
+}
+
+export default function PoemForm({ poem, setPoem, isLoading, onSubmit }: PoemFormProps) {
   return (
     <div className="w-full">
       <label className="block text-sm mb-2">ここに文章を入力してください：</label>
@@ -11,11 +18,11 @@ export default function PoemForm({ poem, setPoem, isLoading, onSubmit, isLoggedI
         className="w-full border rounded-md p-2 min-h-[100px]"
       />
       <Button
-        onClick={isLoggedIn ? onSubmit : onLoginClick}
+        onClick={onSubmit}
         className="w-full bg-blue-500 hover:bg-blue-600 rounded-none h-12 text-white font-normal mt-2"
-        disabled={isLoggedIn && isLoading}
+        disabled={isLoading}
       >
-        {isLoggedIn ? (isLoading ? "処理中..." : "提出") : "ログインして使う"}
+        {isLoading ? "処理中..." : "提出"}
       </Button>
     </div>
   )
